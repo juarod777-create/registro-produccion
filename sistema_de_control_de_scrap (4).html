@@ -1114,11 +1114,24 @@ cancelDefectForm();
         }
 
         function deleteDefectCode(code) {
-            const index = defectsCatalog.findIndex(d => Number(d.code) === Number(code));
-            if (index !== -1) {
-                defectsCatalog.splice(index, 1);
-                renderDefectsCatalog();
-                showToast(`Código de defecto ${code} eliminado.`, 'danger');
+const index = defectsCatalog.findIndex(
+d => Number(d.code) === Number(code)
+);
+ 
+if (index !== -1) {
+ 
+defectsCatalog.splice(index, 1);
+ 
+saveDefectsCatalog();
+ 
+renderDefectsCatalog();
+ 
+showToast(
+`Código de defecto ${code} eliminado.`,
+'danger'
+);
+}
+}
             }
         }
 
