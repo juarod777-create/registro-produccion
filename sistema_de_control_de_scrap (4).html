@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de SCRAP</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#035485',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .modal-active {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col antialiased">
+
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-brand-500 p-2 rounded-lg text-white font-bold text-xl shadow-sm">
+                    <i class="fa-solid fa-industry"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight leading-none text-white">FORMULARIO DE CONTROL DE SCRAP</h1>
+                    <p class="text-xs text-slate-400 mt-0.5">Sistema Digital de Registro y Seguimiento de Calidad</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <button onclick="openDefectsModal()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 hover:text-amber-300 border border-amber-500/30 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-book-bookmark"></i>
+                    <span>Catálogo Defectos</span>
+                </button>
+                <button onclick="exportToCSV()" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-file-excel"></i>
+                    <span class="hidden sm:inline">Exportar</span>
+                </button>
+                <div class="h-6 w-px bg-slate-700 hidden sm:block"></div>
+                <div class="text-right text-xs text-slate-400 hidden md:block">
+                    <div id="current-date-display" class="font-medium text-slate-200"></div>
+                    <div id="status-indicator" class="text-emerald-400 flex items-center justify-end gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Sistema Activo
+                    </div>
+                </div>
+                <div class="h-6 w-px bg-slate-700 hidden sm:block"></div>
+                <!-- Logotipo de HARMAN en la parte superior derecha -->
+                <div class="flex items-center pl-1 sm:pl-2">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Harman_International_logo.svg" 
+                         alt="HARMAN Logo" 
+                         class="h-7 sm:h-8 w-auto object-contain brightness-0 invert opacity-90 hover:opacity-100 transition-opacity"
+                         onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/0/0e/Harman_logo.svg';">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
+
+        <!-- KPI Summary Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Registros</p>
+                    <h3 id="stat-total-records" class="text-2xl font-bold text-slate-800 mt-1">0</h3>
+                </div>
+                <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+            </div>
+            
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Piezas SCRAP (QTY)</p>
+                    <h3 id="stat-total-qty" class="text-2xl font-bold text-rose-600 mt-1">0</h3>
+                </div>
+                <div class="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-trash-can"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Cliente Top</p>
+                    <h3 id="stat-top-client" class="text-lg font-bold text-slate-800 mt-1 truncate max-w-[120px] sm:max-w-[160px]">-</h3>
+                </div>
+                <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-building"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Línea Mayor Impacto</p>
+                    <h3 id="stat-top-line" class="text-lg font-bold text-slate-800 mt-1 truncate max-w-[120px] sm:max-w-[160px]">-</h3>
+                </div>
+                <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-microchip"></i>
+                </div>
+            </div>
+        </div>
+
+        <div id="form-container" class="bg-white rounded-xl border border-slate-200 shadow-sm transition-all duration-300 overflow-hidden">
+            <!-- Form Header Bar -->
+            <div class="bg-slate-800 text-white px-5 py-3.5 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i id="form-mode-icon" class="fa-solid fa-plus-circle text-emerald-400"></i>
+                    <h2 id="form-title" class="font-bold text-sm tracking-wide">NUEVO REGISTRO DE SCRAP</h2>
+                    <span id="form-mode-badge" class="ml-2 px-2 py-0.5 text-[10px] uppercase font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Modo Nuevo</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button type="button" onclick="resetFormToCleanState()" class="text-xs text-slate-300 hover:text-white px-2 py-1 rounded hover:bg-slate-700 transition-colors">
+                        <i class="fa-solid fa-rotate"></i> Limpiar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form Content -->
+            <form id="scrapForm" onsubmit="handleFormSubmit(event)" class="p-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    
+                    <!-- Código SCRAP -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Código SCRAP <span class="text-rose-500">*</span></label>
+                        <div class="relative">
+                            <input type="text" id="Txtcodigo" readonly class="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-xs font-mono font-bold text-slate-700 focus:outline-none cursor-not-allowed">
+                            <i class="fa-solid fa-lock absolute right-3 top-2.5 text-slate-400 text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- Fecha -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Fecha <span class="text-rose-500">*</span></label>
+                        <input type="date" id="Txtfecha" readonly class="w-full bg-slate-100 cursor-not-allowed border border-slate-300 rounded-lg px-3 py-1.5 text-xs outline-none">
+                    </div>
+
+                    <!-- Responsable -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Técnico Responsable <span class="text-rose-500">*</span></label>
+                        <select id="Cmbresponsable" required class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none bg-white">
+                            <option value="">-- Seleccionar --</option>
+                        </select>
+                    </div>
+
+                    <!-- Línea / Área -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Línea <span class="text-rose-500">*</span></label>
+                        <select id="Cmblinea" required class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none bg-white">
+                            <option value="">-- Seleccionar --</option>
+                        </select>
+                    </div>
+
+                    <!-- Cliente -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-xs font-semibold text-slate-600">Cliente <span class="text-rose-500">*</span></label>
+                            <button type="button" onclick="openAddClientModal()" class="text-[10px] text-brand-600 hover:text-brand-700 font-bold flex items-center gap-1 hover:underline">
+                                <i class="fa-solid fa-plus-circle"></i> + Nuevo
+                            </button>
+                        </div>
+                        <select id="Cmbcliente" required class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none bg-white">
+                            <option value="">-- Seleccionar --</option>
+                        </select>
+                    </div>
+
+                    <!-- CRF -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">CRF</label>
+                        <input type="text" id="txtcrf" placeholder="Ej: CRF-2024-88" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none">
+                    </div>
+
+                    <!-- Número de Parte -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Número de Parte (N.P) <span class="text-rose-500">*</span></label>
+                        <input type="text" id="txtnp" required placeholder="Ej: 86120-0K020" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none">
+                    </div>
+
+                    <!-- Proyecto -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Proyecto</label>
+                        <input type="text" id="Txtproyecto" placeholder="Ej: PRJ-ALPHA" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none">
+                    </div>
+
+                    <!-- Nivel -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Nivel <span class="text-rose-500">*</span></label>
+                        <select id="Cmbnivel" required class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none bg-white">
+                            <option value="">-- Seleccionar --</option>
+                        </select>
+                    </div>
+
+                    <!-- SFC -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">SFC / Serie</label>
+                        <input type="text" id="Txtsfc" placeholder="Ej: SFC-998311" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none">
+                    </div>
+
+                    <!-- Código Defecto -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">
+                            Código Defecto <span class="text-rose-500">*</span>
+                            <button type="button" onclick="openDefectsModal()" class="text-[10px] text-brand-600 hover:underline ml-1 font-normal"><i class="fa-solid fa-circle-info"></i> Ver catálogo</button>
+                        </label>
+                        <div class="relative">
+                            <input type="number" id="Txtdefecto" required placeholder="Ej: 502" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none">
+                        </div>
+                    </div>
+
+                    <!-- QTY -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Cantidad (QTY) <span class="text-rose-500">*</span></label>
+                        <input type="number" id="Txtqty" min="1" required placeholder="Ej: 5" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none">
+                    </div>
+
+                    <!-- Estación / Área -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Estación / Área <span class="text-rose-500">*</span></label>
+                        <select id="Cmbarea" required class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none bg-white">
+                            <option value="">-- Seleccionar --</option>
+                        </select>
+                    </div>
+
+                    <!-- Descripción de Pieza -->
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Descripción de la Pieza / Componente</label>
+                        <input type="text" id="Txtdescripcion" placeholder="Ej: Resistencia SMD 10K 0603 o Módulo Display MCU" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none">
+                    </div>
+
+                    <!-- Comentarios -->
+                    <div class="sm:col-span-2 lg:col-span-4">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Comentarios / Causa Raíz Prematura</label>
+                        <textarea id="Txtcomentarios" rows="2" placeholder="Observaciones sobre la falla encontrada..." class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none"></textarea>
+                    </div>
+
+                </div>
+
+                <!-- Form Action Buttons -->
+                <div class="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                    <div class="text-xs text-slate-500">
+                        Campos marcados con (<span class="text-rose-500">*</span>) son obligatorios.
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button type="button" id="btnuevo" onclick="startNewRecordMode()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus"></i> Nuevo
+                        </button>
+
+                        <button type="submit" id="btguardar" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-floppy-disk"></i> Guardar Registro
+                        </button>
+
+                        <button type="button" id="btmodificar" onclick="saveModifiedRecord()" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center gap-1.5 hidden">
+                            <i class="fa-solid fa-pen-to-square"></i> Actualizar
+                        </button>
+
+                        <button type="button" id="btcancelar" onclick="cancelEditMode()" class="px-4 py-2 bg-slate-300 hover:bg-slate-400 text-slate-800 text-xs font-semibold rounded-lg transition-colors hidden">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col overflow-hidden">
+            
+            <!-- Table Action Toolbar & Search Bar -->
+            <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-table-list text-slate-600"></i>
+                    <h3 class="font-bold text-sm text-slate-800">REGISTROS DE SCRAP (LISTAS)</h3>
+                    <span id="record-count-badge" class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full text-xs font-semibold">0 items</span>
+                </div>
+
+                <!-- Search Input and Filters -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="relative flex-1 sm:w-64">
+                        <input type="text" id="txtbuscar" onkeyup="filterTableData()" placeholder="Buscar cliente, N.P, código..." class="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                    </div>
+
+                    <!-- Client Filter Dropdown -->
+                    <select id="filterCliente" onchange="filterTableData()" class="bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 outline-none">
+                        <option value="">Todos los Clientes</option>
+                    </select>
+
+                    <button type="button" id="btbuscar" onclick="filterTableData()" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-lg transition-colors">
+                        Buscar
+                    </button>
+
+                    <button type="button" id="btlimpiar" onclick="clearTableSearch()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-lg transition-colors">
+                        <i class="fa-solid fa-filter-circle-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="overflow-x-auto min-h-[300px]">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200 select-none">
+                            <th class="py-3 px-3">Código</th>
+                            <th class="py-3 px-3">Fecha</th>
+                            <th class="py-3 px-3">Responsable</th>
+                            <th class="py-3 px-3">Línea</th>
+                            <th class="py-3 px-3">Cliente</th>
+                            <th class="py-3 px-3">N.P.</th>
+                            <th class="py-3 px-3">Defecto</th>
+                            <th class="py-3 px-3 text-center">QTY</th>
+                            <th class="py-3 px-3">Estación</th>
+                            <th class="py-3 px-3">Comentarios</th>
+                            <th class="py-3 px-3 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listasTableBody" class="divide-y divide-slate-200">
+                        <!-- Dynamic Row Generation -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Table Footer Status Bar -->
+            <div class="px-4 py-3 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+                <div id="selection-status">
+                    Seleccione un registro de la tabla para editar o eliminar.
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button type="button" id="bteditar" onclick="loadSelectedForEdit()" disabled class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center gap-1">
+                        <i class="fa-solid fa-pen"></i> Editar Seleccionado
+                    </button>
+                    <button type="button" id="bteliminar" onclick="promptDeleteSelected()" disabled class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center gap-1">
+                        <i class="fa-solid fa-trash-can"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- DEFECT CODES MODAL WITH EDITING CAPABILITIES -->
+    <div id="defectsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+            <!-- Modal Header -->
+            <div class="bg-slate-800 text-white px-6 py-4 flex items-center justify-between shrink-0">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-book-open text-amber-400"></i>
+                    <h3 class="font-bold text-base">Catálogo de Códigos de Defectos</h3>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="toggleAddDefectForm()" id="btnToggleAddDefect" class="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-slate-900 text-xs font-bold rounded-lg transition-colors flex items-center gap-1">
+                        <i class="fa-solid fa-plus"></i> <span id="toggleDefectBtnText">Nuevo Defecto</span>
+                    </button>
+                    <button onclick="closeDefectsModal()" class="text-slate-400 hover:text-white text-lg ml-2">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form to Add/Edit Defect -->
+            <div id="defectFormSection" class="p-4 bg-slate-100 border-b border-slate-200 hidden shrink-0">
+                <h4 id="defectFormTitle" class="text-xs font-bold text-slate-800 mb-2 uppercase tracking-wide flex items-center gap-1.5">
+                    <i class="fa-solid fa-pen-to-square text-brand-600"></i> Agregar Nuevo Defecto
+                </h4>
+                <form onsubmit="handleDefectSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <input type="hidden" id="editDefectOriginalCode" value="">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Código (Numérico) <span class="text-rose-500">*</span></label>
+                        <input type="number" id="inputDefectCode" required placeholder="Ej: 509" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-2 focus:ring-brand-500 bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Categoría / Área</label>
+                        <input type="text" id="inputDefectCategory" placeholder="Ej: SMT / FA" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-2 focus:ring-brand-500 bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nombre / Título <span class="text-rose-500">*</span></label>
+                        <input type="text" id="inputDefectName" required placeholder="Ej: Falla IC Micro" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-2 focus:ring-brand-500 bg-white">
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Descripción Breve</label>
+                        <input type="text" id="inputDefectDesc" placeholder="Descripción detallada del fallo..." class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-2 focus:ring-brand-500 bg-white">
+                    </div>
+                    <div class="sm:col-span-3 flex justify-end space-x-2 pt-1">
+                        <button type="button" onclick="cancelDefectForm()" class="px-3 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-lg">Cancelar</button>
+                        <button type="submit" id="btnSaveDefect" class="px-4 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-sm">Guardar Defecto</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal Body (Defects List Grid) -->
+            <div class="p-6 overflow-y-auto flex-1">
+                <p class="text-xs text-slate-500 mb-4">Haga clic en un código para seleccionarlo en el formulario principal, o use las acciones para editar o eliminar.</p>
+                <div id="defectsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <!-- Dynamic rendering via JS -->
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 text-right shrink-0">
+                <button onclick="closeDefectsModal()" class="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-lg transition-colors">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIN SECURITY MODAL FOR DELETION -->
+    <div id="pinModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div class="bg-rose-700 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-300"></i>
+                    <h3 class="font-bold text-base">Confirmar Eliminación</h3>
+                </div>
+                <button onclick="closePinModal()" class="text-slate-300 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-6">
+                <p class="text-xs text-slate-600 mb-2">Está a punto de eliminar el siguiente registro:</p>
+                <div class="bg-slate-100 p-3 rounded-lg border border-slate-200 font-mono text-xs font-bold text-slate-800 mb-4" id="deleteTargetInfo">
+                    -
+                </div>
+
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Ingrese clave de autorización (clave por defecto: <span class="font-mono text-rose-600 font-bold">123</span>):</label>
+                <input type="password" id="inputPinCode" placeholder="Ingrese clave..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none text-center tracking-widest font-bold">
+                <p id="pinErrorMsg" class="text-xs text-rose-600 mt-1 font-semibold hidden"><i class="fa-solid fa-circle-xmark"></i> Clave incorrecta. Intente nuevamente.</p>
+            </div>
+
+            <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-end space-x-2">
+                <button onclick="closePinModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-lg transition-colors">
+                    Cancelar
+                </button>
+                <button onclick="verifyPinAndDelete()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors">
+                    Eliminar Registro
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA AGREGAR NUEVO CLIENTE -->
+    <div id="addClientModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div class="bg-slate-800 text-white px-5 py-3.5 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-building-circle-check text-amber-400"></i>
+                    <h3 class="font-bold text-sm">Agregar Nuevo Cliente</h3>
+                </div>
+                <button onclick="closeAddClientModal()" class="text-slate-400 hover:text-white text-base">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleAddNewClient(event)" class="p-5">
+                <div class="mb-4">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre del Cliente <span class="text-rose-500">*</span></label>
+                    <input type="text" id="inputNewClientName" required placeholder="Ej: NISSAN, MAZDA, AUDI..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none uppercase font-semibold">
+                    <p class="text-[11px] text-slate-500 mt-1.5">El nuevo cliente se añadirá a la lista desplegable y a los filtros de búsqueda.</p>
+                </div>
+
+                <div class="flex justify-end space-x-2 border-t border-slate-100 pt-3">
+                    <button type="button" onclick="closeAddClientModal()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-lg transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-4 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar Cliente
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        const RESPONSABLES = [
+            "Jesus Rodriguez", "Gabriela Aguillon", "Osvaldo Flores", "Cesar Galvan",
+            "Monserrat Cardenas", "Damaria Jimenez", "Yolanda Juarez", "Gilberto Cedillo",
+            "Gustavo Chaves", "Patricia Morales", "Monserrat Balderas", "Reyna Garcia",
+            "Alonso Matamoros", "Beatriz Rodriguez", "Eduardo Trejo", "Ismael Cabrera", "Lizbeth Crespo"
+        ];
+
+        const LINEAS = [
+            "SMT L1", "SMT L2", "REPAIR", "HI", "FA", "TEST", "A&R", "INCOMING", "CUARENTENA", "WAREHOUSE"
+        ];
+
+        let CLIENTES = [
+            "TOYOTA", "GM", "STELLANTIS", "HARLEY D.", "SUBARU", "ADAS", "ZOOX",
+            "VOLVO", "FORD", "MASERATI", "ACURA", "HARMAN", "KIA", "TESLA", "JHON DEERE", "HYUNDAI"
+        ];
+
+        const NIVELES = [
+            "PCBA", "MRT", "NXT", "ROW MATERIAL"
+        ];
+
+        const AREAS = [
+            // SMT
+            "SMT", "(NXT)", "RETRABAJO", "HI-Soldeo", "Conformal", "HotMelt", "Router",
+            // MRT
+            "Sub Assy", "Final Assembly", "Labeling", "Packing", "Optical B.", "Structural B.",
+            // TST
+            "Data IO", "Funcional", "ICT", "LPC", "HAFT", "EOL", "Flash", "CSL", "Burning",
+            // OTRAS AREAS
+            "INCOMING", "CUARENTENA", "WAREHOUSE", "ANALISIS"
+        ];
+
+        // DEFECTS CATALOG INITIAL DATA
+        let defectsCatalog = [
+            { code: 501, name: "Componente Invertido / Polaridad", category: "SMT / MRT", desc: "Componente colocado con orientación errónea." },
+            { code: 502, name: "Puente de Soldadura (Solder Bridge)", category: "SMT / HI", desc: "Unión no deseada entre pines o pads." },
+            { code: 503, name: "Componente Faltante (Missing Part)", category: "SMT", desc: "Ausencia de pieza especificada en el BOM." },
+            { code: 504, name: "Soldadura Fría / Insuficiente", category: "HI / SMT", desc: "Falta de estaño o mal reflujo térmico." },
+            { code: 505, name: "Daño Mecánico / Fractura", category: "FA / Assembly", desc: "Carcasa, conector o PCB golpeado o roto." },
+            { code: 506, name: "Falla Funcional / No Power", category: "TEST / ICT", desc: "Unidad no responde a prueba de encendido." },
+            { code: 507, name: "Efecto Lápida (Tombstone)", category: "SMT (NXT)", desc: "Chip levantado verticalmente en un extremo." },
+            { code: 508, name: "Corto Circuito Interno Componente", category: "ANÁLISIS", desc: "Falla interna de fabricante de materia prima." }
+        ];
+
+        // IN-MEMORY DATA STORAGE
+        let scrapDatabase = [
+            {
+                codigo: "SCRAP-1",
+                fecha: "2026-09-10",
+                responsable: "Jesus Rodriguez",
+                linea: "SMT L1",
+                cliente: "TOYOTA",
+                crf: "CRF-091",
+                np: "86120-0K020",
+                proyecto: "PROY-A",
+                nivel: "PCBA",
+                sfc: "SFC-90812",
+                descripcion: "Resistencia SMD 10K 0603",
+                defecto: "502",
+                qty: "4",
+                area: "SMT",
+                comentarios: "Puente de soldadura en pata 4"
+            },
+            {
+                codigo: "SCRAP-2",
+                fecha: "2026-09-12",
+                responsable: "Gabriela Aguillon",
+                linea: "TEST",
+                cliente: "GM",
+                crf: "CRF-094",
+                np: "13500-A91",
+                proyecto: "PROY-GM",
+                nivel: "MRT",
+                sfc: "SFC-44102",
+                descripcion: "Módulo Control Freno",
+                defecto: "506",
+                qty: "2",
+                area: "Funcional",
+                comentarios: "Unidad no enciende durante prueba ICT"
+            },
+            {
+                codigo: "SCRAP-3",
+                fecha: "2026-09-14",
+                responsable: "Cesar Galvan",
+                linea: "FA",
+                cliente: "TESLA",
+                crf: "CRF-102",
+                np: "TSL-40912",
+                proyecto: "MODEL-Y",
+                nivel: "PCBA",
+                sfc: "SFC-88219",
+                descripcion: "Display Infotainment MCU",
+                defecto: "505",
+                qty: "1",
+                area: "Final Assembly",
+                comentarios: "Carcasa de aluminio fisurada durante ensamble"
+            }
+        ];
+
+        let selectedRowIndex = -1; // -1 means none selected
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeDropdowns();
+            updateCurrentDateHeader();
+            renderTable();
+            startNewRecordMode();
+            updateKPICards();
+        });
+
+        function initializeDropdowns() {
+            populateSelect('Cmbresponsable', RESPONSABLES);
+            populateSelect('Cmblinea', LINEAS);
+            repopulateClientSelects();
+            populateSelect('Cmbnivel', NIVELES);
+            populateSelect('Cmbarea', AREAS);
+        }
+
+        function populateSelect(elementId, itemsArray) {
+            const select = document.getElementById(elementId);
+            itemsArray.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item;
+                opt.textContent = item;
+                select.appendChild(opt);
+            });
+        }
+
+        function repopulateClientSelects(selectedClient = '') {
+            const cmb = document.getElementById('Cmbcliente');
+            const filter = document.getElementById('filterCliente');
+            
+            cmb.innerHTML = '<option value="">-- Seleccionar --</option>';
+            filter.innerHTML = '<option value="">Todos los Clientes</option>';
+
+            CLIENTES.forEach(cliente => {
+                const opt1 = document.createElement('option');
+                opt1.value = cliente;
+                opt1.textContent = cliente;
+                cmb.appendChild(opt1);
+
+                const opt2 = document.createElement('option');
+                opt2.value = cliente;
+                opt2.textContent = cliente;
+                filter.appendChild(opt2);
+            });
+
+            if (selectedClient) {
+                cmb.value = selectedClient;
+            }
+        }
+
+        function openAddClientModal() {
+            document.getElementById('inputNewClientName').value = '';
+            document.getElementById('addClientModal').classList.remove('hidden');
+            document.body.classList.add('modal-active');
+            setTimeout(() => document.getElementById('inputNewClientName').focus(), 100);
+        }
+
+        function closeAddClientModal() {
+            document.getElementById('addClientModal').classList.add('hidden');
+            document.body.classList.remove('modal-active');
+        }
+
+        function handleAddNewClient(event) {
+            event.preventDefault();
+            const clientInput = document.getElementById('inputNewClientName').value.trim().toUpperCase();
+            
+            if (!clientInput) return;
+
+            if (CLIENTES.includes(clientInput)) {
+                showToast(`El cliente "${clientInput}" ya existe en el catálogo.`, 'warning');
+                closeAddClientModal();
+                document.getElementById('Cmbcliente').value = clientInput;
+                return;
+            }
+
+            CLIENTES.push(clientInput);
+            CLIENTES.sort();
+            repopulateClientSelects(clientInput);
+            closeAddClientModal();
+            showToast(`Nuevo cliente "${clientInput}" agregado exitosamente.`, 'success');
+        }
+
+        function updateCurrentDateHeader() {
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+            document.getElementById('current-date-display').textContent = today.toLocaleDateString('es-ES', options);
+        }
+
+        function generateNextCode() {
+            const nextNum = 1 + scrapDatabase.length;
+            return `SCRAP-${nextNum}`;
+        }
+
+        function getTodayDateString() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function renderTable(dataToRender = scrapDatabase) {
+            const tbody = document.getElementById('listasTableBody');
+            tbody.innerHTML = '';
+
+            document.getElementById('record-count-badge').textContent = `${dataToRender.length} registro(s)`;
+
+            if (dataToRender.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="11" class="py-8 text-center text-slate-400">
+                            <i class="fa-regular fa-folder-open text-3xl mb-2 block"></i>
+                            No se encontraron registros de SCRAP.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            dataToRender.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = `hover:bg-brand-50/40 cursor-pointer transition-colors ${selectedRowIndex === index ? 'bg-amber-100/70 border-l-4 border-amber-500 font-medium' : ''}`;
+                tr.onclick = () => selectTableRow(index);
+
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3 font-mono font-bold text-slate-700">${escapeHtml(item.codigo)}</td>
+                    <td class="py-2.5 px-3 text-slate-600 whitespace-nowrap">${escapeHtml(item.fecha)}</td>
+                    <td class="py-2.5 px-3 text-slate-800 font-medium whitespace-nowrap">${escapeHtml(item.responsable)}</td>
+                    <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">${escapeHtml(item.linea)}</span></td>
+                    <td class="py-2.5 px-3 font-semibold text-brand-700">${escapeHtml(item.cliente)}</td>
+                    <td class="py-2.5 px-3 font-mono text-slate-600">${escapeHtml(item.np)}</td>
+                    <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-50 text-rose-700 border border-rose-200">${escapeHtml(item.defecto)}</span></td>
+                    <td class="py-2.5 px-3 text-center font-bold text-rose-600">${escapeHtml(item.qty)}</td>
+                    <td class="py-2.5 px-3 text-slate-600">${escapeHtml(item.area)}</td>
+                    <td class="py-2.5 px-3 text-slate-500 max-w-[180px] truncate" title="${escapeHtml(item.comentarios)}">${escapeHtml(item.comentarios || '-')}</td>
+                    <td class="py-2.5 px-3 text-center">
+                        <button onclick="event.stopPropagation(); selectTableRow(${index}); loadSelectedForEdit();" class="text-amber-600 hover:text-amber-800 p-1 mr-1" title="Editar">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button onclick="event.stopPropagation(); selectTableRow(${index}); promptDeleteSelected();" class="text-rose-600 hover:text-rose-800 p-1" title="Eliminar">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            updateKPICards();
+        }
+
+        function selectTableRow(index) {
+            selectedRowIndex = index;
+            renderTable();
+
+            const record = scrapDatabase[selectedRowIndex];
+            if (record) {
+                document.getElementById('selection-status').innerHTML = `
+                    <span class="font-bold text-slate-700">Seleccionado:</span> ${record.codigo} - ${record.cliente} (${record.np})
+                `;
+                document.getElementById('bteditar').disabled = false;
+                document.getElementById('bteliminar').disabled = false;
+                document.getElementById('Txtcodigo').value = record.codigo;
+            } else {
+                document.getElementById('selection-status').textContent = 'Seleccione un registro de la tabla para editar o eliminar.';
+                document.getElementById('bteditar').disabled = true;
+                document.getElementById('bteliminar').disabled = true;
+            }
+        }
+
+        function filterTableData() {
+            const query = document.getElementById('txtbuscar').value.toLowerCase().trim();
+            const selectedClient = document.getElementById('filterCliente').value;
+
+            const filtered = scrapDatabase.filter(item => {
+                const matchesQuery = !query || 
+                    item.codigo.toLowerCase().includes(query) ||
+                    item.cliente.toLowerCase().includes(query) ||
+                    item.np.toLowerCase().includes(query) ||
+                    item.responsable.toLowerCase().includes(query) ||
+                    item.defecto.toLowerCase().includes(query) ||
+                    item.linea.toLowerCase().includes(query);
+
+                const matchesClient = !selectedClient || item.cliente === selectedClient;
+
+                return matchesQuery && matchesClient;
+            });
+
+            renderTable(filtered);
+        }
+
+        function clearTableSearch() {
+            document.getElementById('txtbuscar').value = '';
+            document.getElementById('filterCliente').value = '';
+            renderTable();
+        }
+
+        function startNewRecordMode() {
+            selectedRowIndex = -1;
+            renderTable();
+
+            document.getElementById('Txtcodigo').value = generateNextCode();
+            document.getElementById('Txtfecha').value = getTodayDateString();
+
+            // Clear inputs
+            document.getElementById('Cmbresponsable').value = '';
+            document.getElementById('Cmblinea').value = '';
+            document.getElementById('Cmbcliente').value = '';
+            document.getElementById('txtcrf').value = '';
+            document.getElementById('txtnp').value = '';
+            document.getElementById('Txtproyecto').value = '';
+            document.getElementById('Cmbnivel').value = '';
+            document.getElementById('Txtsfc').value = '';
+            document.getElementById('Txtdescripcion').value = '';
+            document.getElementById('Txtdefecto').value = '';
+            document.getElementById('Txtqty').value = '';
+            document.getElementById('Cmbarea').value = '';
+            document.getElementById('Txtcomentarios').value = '';
+
+            // Mode UI reset
+            document.getElementById('form-title').textContent = 'NUEVO REGISTRO DE SCRAP';
+            document.getElementById('form-mode-badge').textContent = 'Modo Nuevo';
+            document.getElementById('form-mode-badge').className = 'ml-2 px-2 py-0.5 text-[10px] uppercase font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+            
+            document.getElementById('btguardar').classList.remove('hidden');
+            document.getElementById('btmodificar').classList.add('hidden');
+            document.getElementById('btcancelar').classList.add('hidden');
+
+            document.getElementById('selection-status').textContent = 'Seleccione un registro de la tabla para editar o eliminar.';
+            document.getElementById('bteditar').disabled = true;
+            document.getElementById('bteliminar').disabled = true;
+        }
+
+        function resetFormToCleanState() {
+            startNewRecordMode();
+            showToast('Formulario limpiado.', 'info');
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const newRecord = {
+                codigo: document.getElementById('Txtcodigo').value,
+                fecha: document.getElementById('Txtfecha').value,
+                responsable: document.getElementById('Cmbresponsable').value,
+                linea: document.getElementById('Cmblinea').value,
+                cliente: document.getElementById('Cmbcliente').value,
+                crf: document.getElementById('txtcrf').value,
+                np: document.getElementById('txtnp').value,
+                proyecto: document.getElementById('Txtproyecto').value,
+                nivel: document.getElementById('Cmbnivel').value,
+                sfc: document.getElementById('Txtsfc').value,
+                descripcion: document.getElementById('Txtdescripcion').value,
+                defecto: document.getElementById('Txtdefecto').value,
+                qty: document.getElementById('Txtqty').value,
+                area: document.getElementById('Cmbarea').value,
+                comentarios: document.getElementById('Txtcomentarios').value
+            };
+
+            scrapDatabase.unshift(newRecord);
+            renderTable();
+            startNewRecordMode();
+
+            showToast('Registro de SCRAP guardado con éxito.', 'success');
+        }
+
+        function loadSelectedForEdit() {
+            if (selectedRowIndex === -1 || !scrapDatabase[selectedRowIndex]) {
+                showToast('Por favor selecciona un registro de la tabla.', 'warning');
+                return;
+            }
+
+            const record = scrapDatabase[selectedRowIndex];
+
+            document.getElementById('Txtcodigo').value = record.codigo;
+            document.getElementById('Txtfecha').value = record.fecha;
+            document.getElementById('Cmbresponsable').value = record.responsable;
+            document.getElementById('Cmblinea').value = record.linea;
+            document.getElementById('Cmbcliente').value = record.cliente;
+            document.getElementById('txtcrf').value = record.crf;
+            document.getElementById('txtnp').value = record.np;
+            document.getElementById('Txtproyecto').value = record.proyecto;
+            document.getElementById('Cmbnivel').value = record.nivel;
+            document.getElementById('Txtsfc').value = record.sfc;
+            document.getElementById('Txtdescripcion').value = record.descripcion;
+            document.getElementById('Txtdefecto').value = record.defecto;
+            document.getElementById('Txtqty').value = record.qty;
+            document.getElementById('Cmbarea').value = record.area;
+            document.getElementById('Txtcomentarios').value = record.comentarios;
+
+            document.getElementById('form-title').textContent = `EDITANDO REGISTRO: ${record.codigo}`;
+            document.getElementById('form-mode-badge').textContent = 'Modo Edición';
+            document.getElementById('form-mode-badge').className = 'ml-2 px-2 py-0.5 text-[10px] uppercase font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30';
+
+            document.getElementById('btguardar').classList.add('hidden');
+            document.getElementById('btmodificar').classList.remove('hidden');
+            document.getElementById('btcancelar').classList.remove('hidden');
+
+            document.getElementById('form-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function saveModifiedRecord() {
+            if (selectedRowIndex === -1 || !scrapDatabase[selectedRowIndex]) {
+                showToast('No hay registro seleccionado para modificar.', 'warning');
+                return;
+            }
+
+            scrapDatabase[selectedRowIndex] = {
+                codigo: document.getElementById('Txtcodigo').value,
+                fecha: document.getElementById('Txtfecha').value,
+                responsable: document.getElementById('Cmbresponsable').value,
+                linea: document.getElementById('Cmblinea').value,
+                cliente: document.getElementById('Cmbcliente').value,
+                crf: document.getElementById('txtcrf').value,
+                np: document.getElementById('txtnp').value,
+                proyecto: document.getElementById('Txtproyecto').value,
+                nivel: document.getElementById('Cmbnivel').value,
+                sfc: document.getElementById('Txtsfc').value,
+                descripcion: document.getElementById('Txtdescripcion').value,
+                defecto: document.getElementById('Txtdefecto').value,
+                qty: document.getElementById('Txtqty').value,
+                area: document.getElementById('Cmbarea').value,
+                comentarios: document.getElementById('Txtcomentarios').value
+            };
+
+            renderTable();
+            startNewRecordMode();
+            showToast('Registro modificado y actualizado.', 'success');
+        }
+
+        function cancelEditMode() {
+            startNewRecordMode();
+            showToast('Edición cancelada.', 'info');
+        }
+
+        function promptDeleteSelected() {
+            if (selectedRowIndex === -1 || !scrapDatabase[selectedRowIndex]) {
+                showToast('Selecciona un registro primero.', 'warning');
+                return;
+            }
+
+            const record = scrapDatabase[selectedRowIndex];
+            document.getElementById('deleteTargetInfo').textContent = `${record.codigo} | ${record.cliente} | NP: ${record.np} | Defecto: ${record.defecto}`;
+            document.getElementById('inputPinCode').value = '';
+            document.getElementById('pinErrorMsg').classList.add('hidden');
+            
+            document.getElementById('pinModal').classList.remove('hidden');
+            document.body.classList.add('modal-active');
+        }
+
+        function closePinModal() {
+            document.getElementById('pinModal').classList.add('hidden');
+            document.body.classList.remove('modal-active');
+        }
+
+        function verifyPinAndDelete() {
+            const inputPin = document.getElementById('inputPinCode').value;
+            if (inputPin === '123') {
+                const deletedCode = scrapDatabase[selectedRowIndex].codigo;
+                scrapDatabase.splice(selectedRowIndex, 1);
+                selectedRowIndex = -1;
+                closePinModal();
+                renderTable();
+                startNewRecordMode();
+                showToast(`Registro ${deletedCode} eliminado correctamente.`, 'danger');
+            } else {
+                document.getElementById('pinErrorMsg').classList.remove('hidden');
+            }
+        }
+
+        function openDefectsModal() {
+            renderDefectsCatalog();
+            cancelDefectForm();
+            document.getElementById('defectsModal').classList.remove('hidden');
+            document.body.classList.add('modal-active');
+        }
+
+        function closeDefectsModal() {
+            document.getElementById('defectsModal').classList.add('hidden');
+            document.body.classList.remove('modal-active');
+        }
+
+        function renderDefectsCatalog() {
+            const container = document.getElementById('defectsGrid');
+            container.innerHTML = '';
+
+            defectsCatalog.sort((a, b) => Number(a.code) - Number(b.code));
+
+            defectsCatalog.forEach(defect => {
+                const card = document.createElement('div');
+                card.className = "p-3 border border-slate-200 hover:border-brand-500 hover:bg-brand-50/40 rounded-xl transition-all relative group flex flex-col justify-between bg-white";
+                
+                card.innerHTML = `
+                    <div onclick="selectDefectCode(${defect.code}, '${escapeHtml(defect.name)}')" class="cursor-pointer">
+                        <div class="flex items-center justify-between">
+                            <span class="font-mono font-bold text-brand-700 text-sm">CÓDIGO ${defect.code}</span>
+                            <span class="bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded font-medium">${escapeHtml(defect.category || 'GENERAL')}</span>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-800 mt-1">${escapeHtml(defect.name)}</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(defect.desc || '-')}</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-100 flex justify-end space-x-2">
+                        <button type="button" onclick="event.stopPropagation(); prepareEditDefect(${defect.code});" class="text-[11px] text-amber-600 hover:text-amber-800 hover:underline flex items-center gap-1 font-medium">
+                            <i class="fa-solid fa-pen"></i> Editar
+                        </button>
+                        <button type="button" onclick="event.stopPropagation(); deleteDefectCode(${defect.code});" class="text-[11px] text-rose-600 hover:text-rose-800 hover:underline flex items-center gap-1 font-medium ml-2">
+                            <i class="fa-solid fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectDefectCode(code, name) {
+            document.getElementById('Txtdefecto').value = code;
+            closeDefectsModal();
+            showToast(`Código de defecto ${code} (${name}) seleccionado.`, 'info');
+        }
+
+        function toggleAddDefectForm() {
+            const formSection = document.getElementById('defectFormSection');
+            if (formSection.classList.contains('hidden')) {
+                formSection.classList.remove('hidden');
+                document.getElementById('defectFormTitle').innerHTML = '<i class="fa-solid fa-plus text-brand-600"></i> Agregar Nuevo Defecto';
+                document.getElementById('editDefectOriginalCode').value = '';
+                document.getElementById('inputDefectCode').value = '';
+                document.getElementById('inputDefectCategory').value = '';
+                document.getElementById('inputDefectName').value = '';
+                document.getElementById('inputDefectDesc').value = '';
+                document.getElementById('toggleDefectBtnText').textContent = 'Ocultar Formulario';
+            } else {
+                cancelDefectForm();
+            }
+        }
+
+        function cancelDefectForm() {
+            document.getElementById('defectFormSection').classList.add('hidden');
+            document.getElementById('toggleDefectBtnText').textContent = 'Nuevo Defecto';
+            document.getElementById('editDefectOriginalCode').value = '';
+        }
+
+        function prepareEditDefect(code) {
+            const defect = defectsCatalog.find(d => Number(d.code) === Number(code));
+            if (!defect) return;
+
+            document.getElementById('defectFormSection').classList.remove('hidden');
+            document.getElementById('toggleDefectBtnText').textContent = 'Ocultar Formulario';
+            document.getElementById('defectFormTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-600"></i> Editando Defecto: ${defect.code}`;
+
+            document.getElementById('editDefectOriginalCode').value = defect.code;
+            document.getElementById('inputDefectCode').value = defect.code;
+            document.getElementById('inputDefectCategory').value = defect.category || '';
+            document.getElementById('inputDefectName').value = defect.name || '';
+            document.getElementById('inputDefectDesc').value = defect.desc || '';
+
+            document.getElementById('defectFormSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function handleDefectSubmit(event) {
+            event.preventDefault();
+            const originalCode = document.getElementById('editDefectOriginalCode').value;
+            const newCode = parseInt(document.getElementById('inputDefectCode').value);
+            const category = document.getElementById('inputDefectCategory').value.trim();
+            const name = document.getElementById('inputDefectName').value.trim();
+            const desc = document.getElementById('inputDefectDesc').value.trim();
+
+            if (originalCode) {
+                const index = defectsCatalog.findIndex(d => Number(d.code) === Number(originalCode));
+                if (index !== -1) {
+                    defectsCatalog[index] = { code: newCode, name, category, desc };
+                    showToast(`Código de defecto ${newCode} actualizado.`, 'success');
+                }
+            } else {
+                const existing = defectsCatalog.find(d => Number(d.code) === Number(newCode));
+                if (existing) {
+                    showToast(`El código de defecto ${newCode} ya existe.`, 'warning');
+                    return;
+                }
+                defectsCatalog.push({ code: newCode, name, category, desc });
+                showToast(`Código de defecto ${newCode} agregado al catálogo.`, 'success');
+            }
+
+            renderDefectsCatalog();
+            cancelDefectForm();
+        }
+
+        function deleteDefectCode(code) {
+            const index = defectsCatalog.findIndex(d => Number(d.code) === Number(code));
+            if (index !== -1) {
+                defectsCatalog.splice(index, 1);
+                renderDefectsCatalog();
+                showToast(`Código de defecto ${code} eliminado.`, 'danger');
+            }
+        }
+
+        function updateKPICards() {
+            const totalRecords = scrapDatabase.length;
+            const totalQty = scrapDatabase.reduce((acc, curr) => acc + (parseInt(curr.qty) || 0), 0);
+
+            const clientMap = {};
+            const lineMap = {};
+
+            scrapDatabase.forEach(item => {
+                const qty = parseInt(item.qty) || 1;
+                clientMap[item.cliente] = (clientMap[item.cliente] || 0) + qty;
+                lineMap[item.linea] = (lineMap[item.linea] || 0) + qty;
+            });
+
+            let topClient = '-';
+            let maxClientQty = 0;
+            for (let c in clientMap) {
+                if (clientMap[c] > maxClientQty) {
+                    maxClientQty = clientMap[c];
+                    topClient = c;
+                }
+            }
+
+            let topLine = '-';
+            let maxLineQty = 0;
+            for (let l in lineMap) {
+                if (lineMap[l] > maxLineQty) {
+                    maxLineQty = lineMap[l];
+                    topLine = l;
+                }
+            }
+
+            document.getElementById('stat-total-records').textContent = totalRecords;
+            document.getElementById('stat-total-qty').textContent = totalQty;
+            document.getElementById('stat-top-client').textContent = topClient;
+            document.getElementById('stat-top-line').textContent = topLine;
+        }
+
+        function exportToCSV() {
+            if (scrapDatabase.length === 0) {
+                showToast('No hay datos para exportar.', 'warning');
+                return;
+            }
+
+            const headers = ["Codigo", "Fecha", "Responsable", "Linea", "Cliente", "CRF", "NumeroParte", "Proyecto", "Nivel", "SFC", "Descripcion", "Defecto", "QTY", "Area", "Comentarios"];
+            let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
+
+            scrapDatabase.forEach(row => {
+                const rowValues = [
+                    `"${row.codigo}"`,
+                    `"${row.fecha}"`,
+                    `"${row.responsable}"`,
+                    `"${row.linea}"`,
+                    `"${row.cliente}"`,
+                    `"${row.crf}"`,
+                    `"${row.np}"`,
+                    `"${row.proyecto}"`,
+                    `"${row.nivel}"`,
+                    `"${row.sfc}"`,
+                    `"${(row.descripcion || '').replace(/"/g, '""')}"`,
+                    `"${row.defecto}"`,
+                    `"${row.qty}"`,
+                    `"${row.area}"`,
+                    `"${(row.comentarios || '').replace(/"/g, '""')}"`
+                ];
+                csvContent += rowValues.join(",") + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `SCRAP_Reporte_${getTodayDateString()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast('Reporte CSV descargado correctamente.', 'success');
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+
+            let iconClass = 'fa-info-circle text-blue-500';
+            let borderColor = 'border-blue-500';
+
+            if (type === 'success') {
+                iconClass = 'fa-circle-check text-emerald-500';
+                borderColor = 'border-emerald-500';
+            } else if (type === 'danger') {
+                iconClass = 'fa-circle-xmark text-rose-500';
+                borderColor = 'border-rose-500';
+            } else if (type === 'warning') {
+                iconClass = 'fa-triangle-exclamation text-amber-500';
+                borderColor = 'border-amber-500';
+            }
+
+            toast.className = `pointer-events-auto flex items-center gap-3 bg-slate-900 text-white px-4 py-3 rounded-xl border-l-4 ${borderColor} shadow-xl text-xs font-medium transform transition-all duration-300 translate-y-2 opacity-0 max-w-sm`;
+            toast.innerHTML = `
+                <i class="fa-solid ${iconClass} text-base"></i>
+                <span class="flex-1">${escapeHtml(message)}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
