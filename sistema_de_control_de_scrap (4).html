@@ -1107,8 +1107,10 @@ updateKPICards();
                 showToast(`Código de defecto ${newCode} agregado al catálogo.`, 'success');
             }
 
-            renderDefectsCatalog();
-            cancelDefectForm();
+            saveDefectsCatalog();
+ 
+renderDefectsCatalog();
+cancelDefectForm();
         }
 
         function deleteDefectCode(code) {
