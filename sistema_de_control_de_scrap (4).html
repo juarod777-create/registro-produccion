@@ -553,7 +553,18 @@
             { code: 507, name: "Efecto Lápida (Tombstone)", category: "SMT (NXT)", desc: "Chip levantado verticalmente en un extremo." },
             { code: 508, name: "Corto Circuito Interno Componente", category: "ANÁLISIS", desc: "Falla interna de fabricante de materia prima." }
         ];
-
+function saveDefectsCatalog() {
+localStorage.setItem(
+'defectsCatalog',
+JSON.stringify(defectsCatalog)
+);
+}
+function loadDefectsCatalog() {
+const savedCatalog = localStorage.getItem('defectsCatalog');
+if (savedCatalog) {
+defectsCatalog = JSON.parse(savedCatalog);
+}
+}
         // IN-MEMORY DATA STORAGE
         let scrapDatabase = [
             {
