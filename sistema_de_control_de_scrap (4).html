@@ -623,12 +623,15 @@ defectsCatalog = JSON.parse(savedCatalog);
         let selectedRowIndex = -1; // -1 means none selected
 
         window.addEventListener('DOMContentLoaded', () => {
-            initializeDropdowns();
-            updateCurrentDateHeader();
-            renderTable();
-            startNewRecordMode();
-            updateKPICards();
-        });
+
+loadDefectsCatalog();
+
+initializeDropdowns();
+updateCurrentDateHeader();
+renderTable();
+startNewRecordMode();
+updateKPICards();
+});
 
         function initializeDropdowns() {
             populateSelect('Cmbresponsable', RESPONSABLES);
