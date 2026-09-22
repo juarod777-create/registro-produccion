@@ -1276,6 +1276,96 @@ showToast(
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         }
+        function escapeHtml(text) {
+if (!text) return '';
+return String(text)
+.replace(/&/g, "&amp;")
+.replace(/</g, "&lt;")
+.replace(/>/g, "&gt;")
+.replace(/"/g, "&quot;")
+.replace(/'/g, "&#039;");
+}
+ 
+/* PEGAR AQUÍ */
+ 
+const users = [
+{
+username: "admin",
+password: "Admin123",
+role: "admin"
+},
+{
+username: "tecnico",
+password: "Tecnico123",
+role: "technician"
+}
+];
+ 
+function login() {
+ 
+const username =
+document.getElementById("username").value;
+ 
+const password =
+document.getElementById("password").value;
+ 
+const user = users.find(
+u =>
+u.username === username &&
+u.password === password
+);
+ 
+if (!user) {
+alert("Usuario o contraseña incorrectos");
+return;
+}
+ 
+localStorage.setItem(
+"currentUser",
+JSON.stringify(user)
+);
+ 
+document.getElementById("loginContainer").style.display = "none";
+ 
+document.getElementById("appContainer").style.display = "block";
+ 
+applyPermissions(user.role);
+}
+ 
+function applyPermissions(role) {
+ 
+const adminElements =
+document.querySelectorAll(".admin-only");
+ 
+if (role === "admin") {
+ 
+adminElements.forEach(element => {
+element.style.display = "";
+});
+ 
+} else {
+ 
+adminElements.forEach(element => {
+element.style.display = "none";
+});
+ 
+}
+}
+ 
+document.addEventListener("DOMContentLoaded", () => {
+ 
+const currentUser =
+JSON.parse(localStorage.getItem("currentUser"));
+ 
+if (currentUser) {
+ 
+document.getElementById("loginContainer").style.display = "none";
+ 
+document.getElementById("appContainer").style.display = "block";
+ 
+applyPermissions(currentUser.role);
+}
+});
     </script>
 </body>
 </html>
