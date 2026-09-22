@@ -53,7 +53,27 @@
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col antialiased">
-
+<div id="loginContainer">
+ 
+<h2>Inicio de Sesión</h2>
+ 
+<input
+type="text"
+id="username"
+placeholder="Usuario">
+ 
+<input
+type="password"
+id="password"
+placeholder="Contraseña">
+ 
+<button onclick="login()">
+Ingresar
+</button>
+ 
+</div>
+ 
+<div id="appContainer" style="display:none;">
     <header class="bg-slate-900 text-white shadow-md sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
