@@ -1441,8 +1441,9 @@ role: "admin"
 ];
 
  function login() {
- 
+     
 const username =
+    
 document.getElementById("username").value;
  
 const password =
@@ -1468,8 +1469,7 @@ JSON.stringify(user)
  
 document.getElementById("loginContainer").style.display = "none";
 document.getElementById("appContainer").style.display = "block";
- 
-applyPermissions(user.role);
+ applyPermissions(user.role);
  
 document.getElementById("loggedUser").innerText =
 `Usuario: ${user.username}`;
@@ -1485,9 +1485,8 @@ responsable.disabled =
 user.role === "technician";
  
 }
- 
-}
- 
+applyPermissions(user.role);
+        
 function applyPermissions(role) {
  
 const adminElements =
