@@ -1437,65 +1437,7 @@ role: "admin"
  
 ];
  
-function login() {
- 
-const username =
-document.getElementById("username").value;
- 
-const password =
-document.getElementById("password").value;
- 
-const user = users.find(
-u =>
-u.username === username &&
-u.password === password
-);
- 
-if (!user) {
-alert("Usuario o contraseña incorrectos");
-return;
-}
- 
-localStorage.setItem(
-"currentUser",
-JSON.stringify(user)
-);
- 
-document.getElementById("loginContainer").style.display = "none";
- 
-document.getElementById("appContainer").style.display = "block";
- 
-applyPermissions(user.role);
-   function login() {
- 
-const username =
-document.getElementById("username").value;
- 
-const password =
-document.getElementById("password").value;
- 
-const user = users.find(
-u =>
-u.username === username &&
-u.password === password
-);
- 
-if (!user) {
- 
-alert("Usuario o contraseña incorrectos");
-return;
-}
- 
-localStorage.setItem(
-"currentUser",
-JSON.stringify(user)
-);
- 
-document.getElementById("loginContainer").style.display = "none";
- 
-document.getElementById("appContainer").style.display = "block";
- 
-applyPermissions(user.role);
+
  
 document.getElementById("loggedUser").innerText =
 `Usuario: ${user.username}`;
