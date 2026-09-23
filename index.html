@@ -1354,17 +1354,11 @@ element.style.display = "none";
  
 document.addEventListener("DOMContentLoaded", () => {
  
-const currentUser =
-JSON.parse(localStorage.getItem("currentUser"));
+localStorage.removeItem("currentUser");
  
-if (currentUser) {
+document.getElementById("loginContainer").style.display = "block";
+document.getElementById("appContainer").style.display = "none";
  
-document.getElementById("loginContainer").style.display = "none";
- 
-document.getElementById("appContainer").style.display = "block";
- 
-applyPermissions(currentUser.role);
-}
 });
     </script>
 </body>
