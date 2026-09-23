@@ -1439,6 +1439,55 @@ role: "admin"
 }
  
 ];
+
+ function login() {
+ 
+const username =
+document.getElementById("username").value;
+ 
+const password =
+document.getElementById("password").value;
+ 
+const user = users.find(
+u =>
+u.username === username &&
+u.password === password
+);
+ 
+if (!user) {
+ 
+alert("Usuario o contraseña incorrectos");
+return;
+ 
+}
+ 
+localStorage.setItem(
+"currentUser",
+JSON.stringify(user)
+);
+ 
+document.getElementById("loginContainer").style.display = "none";
+document.getElementById("appContainer").style.display = "block";
+ 
+applyPermissions(user.role);
+ 
+document.getElementById("loggedUser").innerText =
+`Usuario: ${user.username}`;
+ 
+const responsable =
+document.getElementById("Cmbresponsable");
+ 
+if (responsable) {
+ 
+responsable.value = user.username;
+ 
+responsable.disabled =
+user.role === "technician";
+ 
+}
+ 
+}
+ 
 function applyPermissions(role) {
  
 const adminElements =
@@ -1457,8 +1506,8 @@ element.style.display = "none";
 });
  
 }
-}
  
+}
 document.addEventListener("DOMContentLoaded", () => {
  
 localStorage.removeItem("currentUser");
