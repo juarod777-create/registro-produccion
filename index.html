@@ -140,6 +140,9 @@ Ingresar
                     </div>
                 </div>
                 <div class="h-6 w-px bg-slate-700 hidden sm:block"></div>
+                <div id="loggedUser"
+class="text-white text-xs font-semibold">
+</div>
                 <!-- Logotipo de HARMAN en la parte superior derecha -->
                 <div class="flex items-center pl-1 sm:pl-2">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Harman_International_logo.svg" 
@@ -1436,27 +1439,6 @@ role: "admin"
 }
  
 ];
- 
-
- 
-document.getElementById("loggedUser").innerText =
-`Usuario: ${user.username}`;
- 
-if (user.role === "technician") {
- 
-document.getElementById("Cmbresponsable").value =
-user.username;
- 
-document.getElementById("Cmbresponsable").disabled = true;
- 
-} else {
- 
-document.getElementById("Cmbresponsable").disabled = false;
- 
-}
- 
-} 
- 
 function applyPermissions(role) {
  
 const adminElements =
