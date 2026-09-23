@@ -213,7 +213,7 @@ Ingresar
                     <div>
                         <div class="flex items-center justify-between mb-1">
                             <label class="block text-xs font-semibold text-slate-600">Cliente <span class="text-rose-500">*</span></label>
-                            <button type="button" onclick="openAddClientModal()" class="text-[10px] text-brand-600 hover:text-brand-700 font-bold flex items-center gap-1 hover:underline">
+                            <button type="button" onclick="openAddClientModal()" class="admin-only text-[10px] text-brand-600 hover:text-brand-700 font-bold flex items-center gap-1 hover:underline">
                                 <i class="fa-solid fa-plus-circle"></i> + Nuevo
                             </button>
                         </div>
@@ -258,7 +258,7 @@ Ingresar
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">
                             Código Defecto <span class="text-rose-500">*</span>
-                            <button type="button" onclick="openDefectsModal()" class="text-[10px] text-brand-600 hover:underline ml-1 font-normal"><i class="fa-solid fa-circle-info"></i> Ver catálogo</button>
+                            <button type="button" onclick="openDefectsModal()" class="admin-only text-[10px] text-brand-600 hover:underline ml-1 font-normal"><i class="fa-solid fa-circle-info"></i> Ver catálogo</button>
                         </label>
                         <div class="relative">
                             <input type="number" id="Txtdefecto" required placeholder="Ej: 502" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none">
