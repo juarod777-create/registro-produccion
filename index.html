@@ -125,46 +125,50 @@ background:#00579a;
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col antialiased">
 <div id="loginContainer">
  
-<h2>Inicio de Sesión</h2>
+<div class="login-left">
  
-<select id="username">
+<img
+src="https://upload.wikimedia.org/wikipedia/commons/2/22/Harman_International_logo.svg"
+style="width:180px; filter:brightness(0) invert(1); margin-bottom:20px;">
+ 
+<h1>Bienvenido</h1>
+ 
+<p>
+Sistema de Gestión de SCRAP
+</p>
+ 
+</div>
+ 
+<div class="login-right">
+ 
+<div class="login-form">
+ 
+<h2 class="login-title">
+Iniciar Sesión
+</h2>
+ 
+<select id="username" class="login-input">
  
 <option value="">-- Seleccionar Usuario --</option>
  
 <option value="admin">Administrador</option>
  
 <option value="Jesus Rodriguez">Jesus Rodriguez</option>
- 
 <option value="Gabriela Aguillon">Gabriela Aguillon</option>
- 
 <option value="Osvaldo Flores">Osvaldo Flores</option>
- 
 <option value="Cesar Galvan">Cesar Galvan</option>
- 
 <option value="Monserrat Cardenas">Monserrat Cardenas</option>
- 
 <option value="Damaria Jimenez">Damaria Jimenez</option>
- 
 <option value="Yolanda Juarez">Yolanda Juarez</option>
- 
 <option value="Gilberto Cedillo">Gilberto Cedillo</option>
- 
 <option value="Gustavo Chaves">Gustavo Chaves</option>
- 
 <option value="Patricia Morales">Patricia Morales</option>
- 
 <option value="Monserrat Balderas">Monserrat Balderas</option>
- 
 <option value="Reyna Garcia">Reyna Garcia</option>
- 
 <option value="Alonso Matamoros">Alonso Matamoros</option>
- 
 <option value="Beatriz Rodriguez">Beatriz Rodriguez</option>
- 
 <option value="Eduardo Trejo">Eduardo Trejo</option>
- 
 <option value="Ismael Cabrera">Ismael Cabrera</option>
- 
 <option value="Lizbeth Crespo">Lizbeth Crespo</option>
  
 </select>
@@ -172,11 +176,20 @@ background:#00579a;
 <input
 type="password"
 id="password"
+class="login-input"
 placeholder="Contraseña">
  
-<button onclick="login()">
-Ingresar
+<button
+onclick="login()"
+class="login-button">
+ 
+Iniciar Sesión
+ 
 </button>
+ 
+</div>
+ 
+</div>
  
 </div>
  
