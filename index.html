@@ -1609,6 +1609,17 @@ element.style.display = "none";
 });
  
 }
+ function logout() {
+ 
+localStorage.removeItem("currentUser");
+ 
+currentUser = null;
+ 
+document.getElementById("loginContainer").style.display = "block";
+document.getElementById("appContainer").style.display = "none";
+ 
+document.getElementById("username").value = "";
+document.getElementById("password").value = "";
  
 }
 
