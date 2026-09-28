@@ -1607,12 +1607,30 @@ element.style.display = "none";
 }
  
 }
+
 document.addEventListener("DOMContentLoaded", () => {
  
-localStorage.removeItem("currentUser");
+const savedUser =
+localStorage.getItem("currentUser");
+ 
+if (savedUser) {
+ 
+currentUser = JSON.parse(savedUser);
+ 
+document.getElementById("loginContainer").style.display = "none";
+document.getElementById("appContainer").style.display = "block";
+ 
+document.getElementById("loggedUser").innerText =
+`Usuario: ${currentUser.username}`;
+ 
+applyPermissions(currentUser.role);
+ 
+} else {
  
 document.getElementById("loginContainer").style.display = "block";
 document.getElementById("appContainer").style.display = "none";
+ 
+}
  
 });
     </script>
