@@ -986,7 +986,11 @@ updateKPICards();
             document.getElementById('Txtqty').value = '';
             document.getElementById('Cmbarea').value = '';
             document.getElementById('Txtcomentarios').value = '';
-
+const currentUser = sessionStorage.getItem('currentUser');
+ 
+if(currentUser){
+document.getElementById('cmbresponsable').value = currentUser;
+}
             // Mode UI reset
             document.getElementById('form-title').textContent = 'NUEVO REGISTRO DE SCRAP';
             document.getElementById('form-mode-badge').textContent = 'Modo Nuevo';
