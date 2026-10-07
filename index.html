@@ -1220,6 +1220,10 @@ class="text-[11px] text-rose-600 hover:text-rose-800 hover:underline flex items-
         }
 
         function toggleAddDefectForm() {
+            if (!currentUser || currentUser.role !== 'admin') {
+showToast('Solo el administrador puede agregar defectos.', 'warning');
+return;
+}
             const formSection = document.getElementById('defectFormSection');
             if (formSection.classList.contains('hidden')) {
                 formSection.classList.remove('hidden');
