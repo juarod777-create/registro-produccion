@@ -1109,6 +1109,10 @@ document.getElementById('cmbresponsable').value = currentUser;
         }
 
         function promptDeleteSelected() {
+            if (!currentUser || currentUser.role !== 'admin') {
+showToast('Solo el administrador puede eliminar registros.', 'warning');
+return;
+}
             if (selectedRowIndex === -1 || !scrapDatabase[selectedRowIndex]) {
                 showToast('Selecciona un registro primero.', 'warning');
                 return;
