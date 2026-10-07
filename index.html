@@ -1133,6 +1133,10 @@ return;
         }
 
         function verifyPinAndDelete() {
+            if (!currentUser || currentUser.role !== 'admin') {
+showToast('Acceso denegado.', 'danger');
+return;
+}
             const inputPin = document.getElementById('inputPinCode').value;
             if (inputPin === '123') {
                 const deletedCode = scrapDatabase[selectedRowIndex].codigo;
