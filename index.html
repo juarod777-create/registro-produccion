@@ -908,9 +908,11 @@ updateKPICards();
                         <button onclick="event.stopPropagation(); selectTableRow(${index}); loadSelectedForEdit();" class="text-amber-600 hover:text-amber-800 p-1 mr-1" title="Editar">
                             <i class="fa-solid fa-pen"></i>
                         </button>
+                        ${currentUser && currentUser.role === 'admin' ? `
                         <button onclick="event.stopPropagation(); selectTableRow(${index}); promptDeleteSelected();" class="text-rose-600 hover:text-rose-800 p-1" title="Eliminar">
                             <i class="fa-solid fa-trash"></i>
                         </button>
+                        ` : ''}
                     </td>
                 `;
                 tbody.appendChild(tr);
