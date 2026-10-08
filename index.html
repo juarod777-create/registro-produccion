@@ -1699,7 +1699,17 @@ document.getElementById("loggedUser").innerText =
 `Usuario: ${currentUser.username}`;
  
 applyPermissions(currentUser.role);
- 
+ const btnNuevoDefecto =
+document.getElementById("btnToggleAddDefect");
+
+if (btnNuevoDefecto) {
+    btnNuevoDefecto.style.display =
+        currentUser.role === "admin"
+            ? "flex"
+            : "none";
+}
+
+renderDefectsCatalog();
 } else {
  
 document.getElementById("loginContainer").style.display = "block";
