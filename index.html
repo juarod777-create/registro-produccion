@@ -1151,18 +1151,34 @@ return;
             }
         }
 
-        function openDefectsModal() {
-            const isAdmin = currentUser && currentUser.role === 'admin';
- 
-// Ocultar formulario de edición para técnicos
-const defectForm = document.getElementById('defectFormContainer');
-if (defectForm) {
-defectForm.style.display = isAdmin ? 'block' : 'none';
-}
+  function openDefectsModal() {
 
-            document.getElementById('defectsModal').classList.remove('hidden');
-            document.body.classList.add('modal-active');
-        }
+    const isAdmin = currentUser &&
+                    currentUser.role === "admin";
+
+    const btnNuevoDefecto =
+        document.getElementById("btnToggleAddDefect");
+
+    if (btnNuevoDefecto) {
+        btnNuevoDefecto.style.display =
+            isAdmin ? "flex" : "none";
+    }
+
+    const formSection =
+        document.getElementById("defectFormSection");
+
+    if (formSection && !isAdmin) {
+        formSection.classList.add("hidden");
+    }
+
+    renderDefectsCatalog();
+
+    document
+        .getElementById("defectsModal")
+        .classList.remove("hidden");
+
+    document.body.classList.add("modal-active");
+}
 
         function closeDefectsModal() {
             document.getElementById('defectsModal').classList.add('hidden');
