@@ -1316,23 +1316,34 @@ cancelDefectForm();
         }
 
         function deleteDefectCode(code) {
-const index = defectsCatalog.findIndex(
-d => Number(d.code) === Number(code)
-);
- 
-if (index !== -1) {
- 
-defectsCatalog.splice(index, 1);
- 
-saveDefectsCatalog();
- 
-renderDefectsCatalog();
- 
-showToast(
-`Código de defecto ${code} eliminado.`,
-'danger'
-);
-}
+
+    if (!currentUser || currentUser.role !== "admin") {
+
+        showToast(
+            "Solo el administrador puede eliminar defectos.",
+            "warning"
+        );
+
+        return;
+    }
+
+    const index = defectsCatalog.findIndex(
+        d => Number(d.code) === Number(code)
+    );
+
+    if (index !== -1) {
+
+        defectsCatalog.splice(index, 1);
+
+        saveDefectsCatalog();
+
+        renderDefectsCatalog();
+
+        showToast(
+            `Código de defecto ${code} eliminado.`,
+            "danger"
+        );
+    }
 }
 
         function updateKPICards() {
