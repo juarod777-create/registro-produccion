@@ -1262,6 +1262,13 @@ return;
         }
 
         function prepareEditDefect(code) {
+            if (!currentUser || currentUser.role !== "admin") {
+    showToast(
+        "Solo el administrador puede editar defectos.",
+        "warning"
+    );
+    return;
+}
             const defect = defectsCatalog.find(d => Number(d.code) === Number(code));
             if (!defect) return;
 
