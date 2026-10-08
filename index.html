@@ -1638,7 +1638,15 @@ user.role === "technician";
 }
  
 applyPermissions(user.role);
- 
+ const btnNuevoDefecto =
+document.getElementById("btnToggleAddDefect");
+
+if (btnNuevoDefecto) {
+    btnNuevoDefecto.style.display =
+        user.role === "admin"
+            ? "flex"
+            : "none";
+}
 renderDefectsCatalog();
  
 }
