@@ -989,8 +989,14 @@ updateKPICards();
             document.getElementById('Txtcomentarios').value = '';
 const currentUser = sessionStorage.getItem('currentUser');
  
-if(currentUser){
-document.getElementById('cmbresponsable').value = currentUser;
+if (currentUser) {
+
+    const responsable =
+        document.getElementById('Cmbresponsable');
+
+    if (responsable) {
+        responsable.value = currentUser.username;
+    }
 }
             // Mode UI reset
             document.getElementById('form-title').textContent = 'NUEVO REGISTRO DE SCRAP';
