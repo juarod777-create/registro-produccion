@@ -1799,6 +1799,12 @@ function registrarHistorial(accion, codigo){
         codigo: codigo
     });
 
+    if(historialCambios.length > 500){
+        historialCambios.pop();
+    }
+
+    guardarHistorial();
+
 }
 
 function abrirHistorialCambios(){
