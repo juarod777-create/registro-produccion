@@ -1083,6 +1083,10 @@ if (currentUser) {
             };
 
             scrapDatabase.unshift(newRecord);
+            registrarHistorial(
+    "Registro creado",
+    newRecord.codigo
+);
             renderTable();
             startNewRecordMode();
 
