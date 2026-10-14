@@ -1381,6 +1381,10 @@ return;
                     return;
                 }
                 defectsCatalog.push({ code: newCode, name, category, desc });
+                registrarHistorial(
+    "Defecto agregado",
+    newCode
+);
                 showToast(`Código de defecto ${newCode} agregado al catálogo.`, 'success');
             }
 
