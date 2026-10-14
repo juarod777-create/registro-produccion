@@ -1746,7 +1746,10 @@ element.style.display = "none";
  function logout() {
  
 localStorage.removeItem("currentUser");
- 
+ registrarHistorial(
+    "Cierre de sesión",
+    "-"
+);
 currentUser = null;
  
 document.getElementById("loginContainer").style.display = "block";
