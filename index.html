@@ -1684,7 +1684,10 @@ return;
 }
  
 currentUser = user;
- 
+ registrarHistorial(
+    "Inicio de sesión",
+    "-"
+);
 localStorage.setItem(
 "currentUser",
 JSON.stringify(user)
