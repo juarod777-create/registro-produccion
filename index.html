@@ -1417,7 +1417,10 @@ cancelDefectForm();
     if (index !== -1) {
 
         defectsCatalog.splice(index, 1);
-
+registrarHistorial(
+    "Defecto eliminado",
+    code
+);
         saveDefectsCatalog();
 
         renderDefectsCatalog();
