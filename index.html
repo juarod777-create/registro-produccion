@@ -1372,6 +1372,10 @@ return;
                 const index = defectsCatalog.findIndex(d => Number(d.code) === Number(originalCode));
                 if (index !== -1) {
                     defectsCatalog[index] = { code: newCode, name, category, desc };
+                    registrarHistorial(
+    "Defecto editado",
+    newCode
+);
                     showToast(`Código de defecto ${newCode} actualizado.`, 'success');
                 }
             } else {
