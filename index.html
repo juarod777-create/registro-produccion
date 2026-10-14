@@ -1767,6 +1767,63 @@ document.getElementById("appContainer").style.display = "none";
  
 }
 });
+        // ===== HISTORIAL DE CAMBIOS =====
+
+function registrarHistorial(accion, codigo){
+
+    historialCambios.unshift({
+        fecha: new Date().toLocaleString('es-MX'),
+        usuario: currentUser ? currentUser.username : 'Sistema',
+        accion: accion,
+        codigo: codigo
+    });
+
+}
+
+function abrirHistorialCambios(){
+
+    const tbody = document.getElementById('historialBody');
+
+    tbody.innerHTML = '';
+
+    if(historialCambios.length === 0){
+
+        tbody.innerHTML = `
+        <tr>
+            <td colspan="4" class="p-4 text-center text-slate-500">
+                No existen cambios registrados.
+            </td>
+        </tr>
+        `;
+
+    }else{
+
+        historialCambios.forEach(item => {
+
+            tbody.innerHTML += `
+            <tr class="border-b">
+                <td class="p-2">${item.fecha}</td>
+                <td class="p-2">${item.usuario}</td>
+                <td class="p-2">${item.accion}</td>
+                <td class="p-2">${item.codigo}</td>
+            </tr>
+            `;
+
+        });
+
+    }
+
+    document.getElementById('historialModal')
+        .classList.remove('hidden');
+
+}
+
+function cerrarHistorialCambios(){
+
+    document.getElementById('historialModal')
+        .classList.add('hidden');
+
+}
     </script>
 </body>
 </html>
