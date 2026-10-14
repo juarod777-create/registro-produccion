@@ -1151,7 +1151,10 @@ if (currentUser) {
                 area: document.getElementById('Cmbarea').value,
                 comentarios: document.getElementById('Txtcomentarios').value
             };
-
+registrarHistorial(
+    "Registro editado",
+    document.getElementById("Txtcodigo").value
+);
             renderTable();
             startNewRecordMode();
             showToast('Registro modificado y actualizado.', 'success');
