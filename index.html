@@ -656,7 +656,44 @@ Cerrar Sesión
             </form>
         </div>
     </div>
+<!-- MODAL HISTORIAL -->
+<div id="historialModal"
+class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center">
 
+<div class="bg-white rounded-xl w-11/12 max-w-4xl">
+
+<div class="bg-slate-800 text-white p-4 flex justify-between">
+<h3 class="font-bold">
+Historial de Cambios
+</h3>
+
+<button onclick="cerrarHistorialCambios()">
+<i class="fa-solid fa-xmark"></i>
+</button>
+</div>
+
+<div class="p-4 max-h-[500px] overflow-auto">
+
+<table class="w-full text-xs">
+<thead>
+<tr class="bg-slate-100">
+<th class="p-2">Fecha</th>
+<th class="p-2">Usuario</th>
+<th class="p-2">Acción</th>
+<th class="p-2">Registro</th>
+</tr>
+</thead>
+
+<tbody id="historialBody">
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
     <!-- TOAST NOTIFICATION CONTAINER -->
     <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
