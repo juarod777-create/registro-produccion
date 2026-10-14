@@ -901,6 +901,10 @@ updateKPICards();
             CLIENTES.push(clientInput);
             CLIENTES.sort();
             repopulateClientSelects(clientInput);
+            registrarHistorial(
+    "Cliente agregado",
+    clientInput
+);
             closeAddClientModal();
             showToast(`Nuevo cliente "${clientInput}" agregado exitosamente.`, 'success');
         }
