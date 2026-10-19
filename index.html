@@ -2172,26 +2172,34 @@ function cerrarHistorialCambios(){
         .classList.add('hidden');
 
 }
-        function abrirModalRecuperar(){
+  function abrirModalRecuperar(){
 
-    const combo = document.getElementById("recUsuario");
+    const combo =
+        document.getElementById("recUsuario");
+
+    if(!combo){
+        console.error(
+            "No existe el select recUsuario"
+        );
+        return;
+    }
 
     combo.innerHTML =
         '<option value="">Seleccione usuario</option>';
 
     users.forEach(user => {
 
-        const option = document.createElement("option");
-
-        option.value = user.username;
-        option.textContent = user.username;
-
-        combo.appendChild(option);
+        combo.innerHTML +=
+        `<option value="${user.username}">
+            ${user.username}
+        </option>`;
 
     });
 
-    document.getElementById("modalRecuperar").style.display = "flex";
-}
+    document.getElementById(
+        "modalRecuperar"
+    ).style.display = "flex";
+}     
 
 function cerrarModalRecuperar(){
 
