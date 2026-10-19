@@ -2212,35 +2212,7 @@ function actualizarPassword(){
     document.getElementById("recConfirmPassword").value = "";
 }
     </script>
-    <!-- MODAL RECUPERAR CONTRASEÑA -->
-<div id="modalRecuperar" class="modal-overlay">
-    <div class="modal-content">
-
-        <div class="modal-header">
-            <h2>Recuperar Contraseña</h2>
-            <span class="close-modal" onclick="cerrarModalRecuperar()">&times;</span>
-        </div>
-
-        <div class="modal-body">
-
-            <label>Usuario</label>
-            <select id="recUsuario">
-                <option value="">Seleccione usuario</option>
-            </select>
-
-            <label>Nueva Contraseña</label>
-            <input type="password" id="recPassword">
-
-            <label>Confirmar Contraseña</label>
-            <input type="password" id="recConfirmPassword">
-
-            <button onclick="actualizarPassword()">
-                Guardar Contraseña
-            </button>
-
-        </div>
-
-    </div>
+    
 </div>
 </body>
 </html>
