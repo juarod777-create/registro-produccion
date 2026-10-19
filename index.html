@@ -2056,6 +2056,80 @@ function cerrarHistorialCambios(){
         .classList.add('hidden');
 
 }
+        function abrirModalRecuperar(){
+
+    const combo = document.getElementById("recUsuario");
+
+    combo.innerHTML =
+        '<option value="">Seleccione usuario</option>';
+
+    users.forEach(user => {
+
+        const option = document.createElement("option");
+
+        option.value = user.username;
+        option.textContent = user.username;
+
+        combo.appendChild(option);
+
+    });
+
+    document.getElementById("modalRecuperar").style.display = "flex";
+}
+
+function cerrarModalRecuperar(){
+
+    document.getElementById("modalRecuperar").style.display = "none";
+}
+
+function actualizarPassword(){
+
+    const usuario =
+        document.getElementById("recUsuario").value;
+
+    const password =
+        document.getElementById("recPassword").value;
+
+    const confirmacion =
+        document.getElementById("recConfirmPassword").value;
+
+    if(!usuario){
+        alert("Seleccione un usuario");
+        return;
+    }
+
+    if(password === ""){
+        alert("Ingrese una contraseña");
+        return;
+    }
+
+    if(password !== confirmacion){
+        alert("Las contraseñas no coinciden");
+        return;
+    }
+
+    const user =
+        users.find(u => u.username === usuario);
+
+    if(!user){
+        alert("Usuario no encontrado");
+        return;
+    }
+
+    user.password = password;
+
+    registrarHistorial(
+        "Cambio de contraseña",
+        usuario
+    );
+
+    alert("Contraseña actualizada correctamente");
+
+    cerrarModalRecuperar();
+
+    document.getElementById("recPassword").value = "";
+    document.getElementById("recConfirmPassword").value = "";
+}
     </script>
     <!-- MODAL RECUPERAR CONTRASEÑA -->
 <div id="modalRecuperar" class="modal-overlay">
