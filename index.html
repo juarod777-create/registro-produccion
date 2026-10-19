@@ -50,75 +50,115 @@
         .modal-active {
             overflow: hidden;
         }
-        /* LOGIN HARMAN */
+       /* LOGIN MODERNO */
+
+.login-header{
+text-align:center;
+margin-top:20px;
+margin-bottom:20px;
+}
+
+.login-header h1{
+color:white;
+font-size:42px;
+font-weight:700;
+letter-spacing:1px;
+}
+
 #loginContainer{
-display:flex;
-width:900px;
-height:450px;
-margin:80px auto;
+width:520px;
+margin:20px auto;
 background:white;
 border-radius:25px;
-overflow:hidden;
-box-shadow:0 15px 40px rgba(0,0,0,.25);
-}
- 
-.login-left{
-width:40%;
-background:linear-gradient(135deg,#001B44,#0070C0);
-color:white;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
 padding:40px;
-text-align:center;
+box-shadow:0 20px 50px rgba(0,0,0,.25);
 }
- 
-.login-left h1{
-font-size:32px;
-font-weight:bold;
-margin-bottom:15px;
-}
- 
-.login-right{
-width:60%;
-display:flex;
-justify-content:center;
-align-items:center;
-}
- 
+
 .login-form{
-width:320px;
-}
- 
-.login-title{
-font-size:30px;
-font-weight:700;
-margin-bottom:25px;
-color:#001B44;
-}
- 
-.login-input{
 width:100%;
-padding:12px;
-border:1px solid #d1d5db;
-border-radius:10px;
-margin-bottom:15px;
 }
- 
+
+.logo-container{
+text-align:center;
+margin-bottom:20px;
+}
+
+.logo-container img{
+width:260px;
+height:auto;
+margin:auto;
+}
+
+.welcome{
+text-align:center;
+font-size:24px;
+font-weight:700;
+color:#001B44;
+margin-bottom:10px;
+}
+
+.login-title{
+text-align:center;
+font-size:18px;
+font-weight:600;
+color:#666;
+margin-bottom:30px;
+}
+
+.input-group{
+position:relative;
+margin-bottom:25px;
+}
+
+.input-group label{
+position:absolute;
+top:-10px;
+left:15px;
+background:white;
+padding:0 8px;
+font-size:13px;
+font-weight:600;
+color:#666;
+}
+
+.modern-input{
+width:100%;
+height:55px;
+border:2px solid #D1D5DB;
+border-radius:12px;
+padding:0 15px;
+font-size:15px;
+outline:none;
+transition:.3s;
+background:white;
+}
+
+.modern-input:focus{
+border-color:#0070C0;
+box-shadow:0 0 0 3px rgba(0,112,192,.15);
+}
+
 .login-button{
 width:100%;
-padding:12px;
-border:none;
-border-radius:10px;
+height:55px;
 background:#0070C0;
+border:none;
+border-radius:12px;
 color:white;
+font-size:16px;
 font-weight:bold;
 cursor:pointer;
+transition:.3s;
 }
- 
+
 .login-button:hover{
-background:#00579a;
+background:#00579A;
+transform:translateY(-2px);
+}
+
+.login-button:active{
+background:#003F70;
+transform:translateY(0);
 }
     </style>
 </head>
